@@ -1,34 +1,35 @@
 # **************************************************************************** #
 #                                                                              #
 #                                                         :::      ::::::::    #
-#    pr_queue.py                                        :+:      :+:    :+:    #
+#    state.py                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
 #    By: rbaum <rbaum@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2016/11/14 02:57:55 by rbaum             #+#    #+#              #
-#    Updated: 2016/11/14 02:57:56 by rbaum            ###   ########.fr        #
+#    Created: 2016/11/15 05:37:30 by rbaum             #+#    #+#              #
+#    Updated: 2016/11/15 05:37:31 by rbaum            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-from heapq import heappop, heappush
+import pr_queue as p
 
-# priority queue
+# class pr:
+# 	def __init__(self):
+# 		self.q = []
 
-class pr:
-	def __init__(self):
-		self.q = []
+# 	def add(self, item):
+# 		heappush(self.q, item)
 
-	def add(self, item):
-		heappush(self.q, item)
+# 	def get(self):
+# 		return heappop(self.q)
 
-	def get(self):
-		return heappop(self.q)
+# 	def look(self):
+# 		return (self.q[0])
 
-	def look(self):
-		return (self.q[0])
+# 	def __len__(self):
+# 		return (len(self.q))
 
-	def __len__(self):
-		return (len(self.q))
-
-
-
+class State:
+	def __init__(self, parent=None, matrix):
+		self.parent = parent
+		self.matrix = matrix
+		

@@ -10,9 +10,7 @@
 #                                                                              #
 # **************************************************************************** #
 
-import sys
-from verify import count_inversions, check_validity, print_2by2_matrix, spiral_matrix
-import pr_queue
+import sys, verify, solve
 
 def get_map(argv):
 	try: 
@@ -23,14 +21,36 @@ def get_map(argv):
 		exit("Invalid file")
 
 
+def matrix_validity(m, n):
+	new = []
+	for i in m:
+		k = i.find('#')
+		if k == -1:
+			new += [i]
+		else:
+			new += [i[:k]]
+	verif = [i.replace(" ",  "") for i in new]
+	for i in verif:
+		if len(i) is not n:
+			exit("Bad file, should be n by n")
+		elif not i.isdigit():
+			exit("Digits only")
+	return new
+
+
+
 def main(argv):
 	given = get_map(argv)
 	n = int(given[0])
 	given = given[1:]
-	matrix = [int(x) if x is not '0' else n*n for l in given for x in l.split()]
-	spiral = spiral_matrix(n)
-	check_validity(matrix, spiral, n)
-
+	given = matrix_validity(given, n)
+	matrix = [int(x) for l in given for x in l.split()]
+	spiral = verify.spiral_matrix(n)
+	verify.check_validity(matrix, spiral, n)
+	print("After check, go to resolve")
+	state = solve.State(matrix, n)
+	astar = solve.Astar(spiral, state, n)
+	astar.solve()
 
 
 if __name__ == '__main__':
