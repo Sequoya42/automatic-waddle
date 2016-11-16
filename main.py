@@ -21,6 +21,9 @@ def get_map(argv):
 		exit("Invalid file")
 
 
+# should be possible to use string, and still use index, in much the same
+# way as list
+
 def matrix_validity(m, n):
 	new = []
 	for i in m:
@@ -35,7 +38,7 @@ def matrix_validity(m, n):
 			exit("Bad file, should be n by n")
 		elif not i.isdigit():
 			exit("Digits only")
-	return new
+	return verif
 
 
 
@@ -46,6 +49,9 @@ def main(argv):
 	given = matrix_validity(given, n)
 	matrix = [int(x) for l in given for x in l.split()]
 	spiral = verify.spiral_matrix(n)
+	for i in given:
+		print("start " + i + " end")
+	exit(0)
 	verify.check_validity(matrix, spiral, n)
 	print("After check, go to resolve")
 	state = solve.State(matrix, n)

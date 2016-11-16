@@ -11,7 +11,7 @@
 # **************************************************************************** #
 
 import pr_queue as p
-
+import misc
 # class pr:
 # 	def __init__(self):
 # 		self.q = []
@@ -29,15 +29,7 @@ import pr_queue as p
 # 		return (len(self.q))
 
 
-1 2 3
-4 9 6 -> -1 | + 1 | -n | + n
-7 8 5
-
-1 2 3 4
-5 6 7 8
-9 1 2 3
-4 5 6 1
-
+# Use strings instead list
 class State:
 	def __init__(self, matrix, n, cost = 0, parent = None):
 		self.mtx = matrix
@@ -52,44 +44,43 @@ class State:
 		return (y, x)
 
 	def get_swapped(self, pos, new):
-		ret = mtx[:]
+		ret = self.mtx[:]
 		ret[pos], ret[new] = ret[new], ret[pos]
 		return (ret)
 
 	def get_next_states(self):
-		next = []
 		mtx = self.mtx
 		n = self.n
-		pos = mtx.find(0)
-		if pos > 0: next += get_swapped(pos, pos - 1)
-		if pos > n: next += get_swapped(pos, pos - n)
-		if pos < self.length: next += get_swapped(pos, pos + 1)
-		if pos <= self.length - self.n + 1: next += get_swapped(pos, pos + n)
+		pos = mtx.index(0)
+		if pos > 0: yield self.get_swapped(pos, pos - 1)
+		if pos > n: yield self.get_swapped(pos, pos - n)
+		if pos < self.length: yield self.get_swapped(pos, pos + 1)
+		if pos <= self.length - self.n + 1: yield self.get_swapped(pos, pos + n)
 		return next
 		
 
 class Astar:
 	def __init__(self, goal, initial, n):
-		self.state = initial
+		self.cur = initial
 		self.goal = goal
 		self.length = len(goal)
 		self.n = n
-		self.open = p.pr()
 		self.closed = set()
-
-	def add_states(self):
-		pass
-		# new_states = []
-		# (y, x) = self.get_xy(0)
 
 
 	def solve(self):
-		self.open.add(self.cur)
-		self.parent[self.cur] = None
+		open = p.pr()
+		open.add((0, str(self.cur.mtx)))
 
-		while open:
-			current = open.get()
-			add_states()
+		# while open:
+		# 	current = open.get()
+		# 	for i in current.get_next_states():
+		# 		f = 1
+		# 		# open.add((f, i))
+		# 		misc.print_matrix(i, self.n)
+		# print("and initial was:")
+		# misc.print_matrix(self.cur.mtx, self.n)
+
 
 
 	def f(self):

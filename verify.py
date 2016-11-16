@@ -43,13 +43,13 @@ def check_validity(matrix, spiral, n):
 		exit(("NOT SOLVABLE", mi, si))
 
 
-# def print_2by2_matrix(m, n):
-# 	k = len(str(n*n))
-# 	for l in m:
-# 		for i in l:
-# 			print("{:{}d}".format(i, k), end=' ')
-# 		print()
-# 	print("------------------")
+def print_2by2_matrix(m, n):
+	k = len(str(n*n))
+	for l in m:
+		for i in l:
+			print("{:{}d}".format(i, k), end=' ')
+		print()
+	print("------------------")
 
 
 def spiral_matrix(n):
