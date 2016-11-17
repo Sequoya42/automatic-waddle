@@ -43,6 +43,8 @@ class Solver:
 
 
 class State:
+  __slots__ = ['values', 'moves', 'parent', 'goal']
+
   def __init__(self, values, moves=0, parent=None):
     self.values = values
     self.moves = moves
@@ -95,6 +97,7 @@ class State:
         str(self.values[6:9])]).replace('[', '').replace(']', '').replace(',', '').replace('0', 'x')
 
 class PriorityQueue:
+  __slots__ = ['pq']
   def __init__(self):
     self.pq = []
 
@@ -116,8 +119,9 @@ class PriorityQueue:
     return len(self.pq)
 
 
-puzzle = range(9)
-shuffle(puzzle)
-#puzzle = [1, 7, 4, 6, 8, 3, 2, 5, 0]
+# puzzle = range(9)
+# shuffle(puzzle)
+puzzle = [1, 0, 7, 8, 3, 2, 5, 4, 6]
+# puzzle = [1, 7, 4, 6, 8, 3, 2, 5, 0]
 solver = Solver(puzzle)
 solver.solve()

@@ -13,23 +13,23 @@
 import pr_queue as p
 
 # class pr:
-# 	def __init__(self):
-# 		self.q = []
+#   def __init__(self):
+#     self.q = []
 
-# 	def add(self, item):
-# 		heappush(self.q, item)
+#   def add(self, item):
+#     heappush(self.q, item)
 
-# 	def get(self):
-# 		return heappop(self.q)
+#   def get(self):
+#     return heappop(self.q)
 
-# 	def look(self):
-# 		return (self.q[0])
+#   def look(self):
+#     return (self.q[0])
 
-# 	def __len__(self):
-# 		return (len(self.q))
+#   def __len__(self):
+#     return (len(self.q))
 
 class State:
-	def __init__(self, parent=None, matrix):
-		self.parent = parent
-		self.matrix = matrix
-		
+  def __init__(self, parent=None, matrix):
+    self.parent = parent
+    self.matrix = matrix
+    

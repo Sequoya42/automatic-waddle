@@ -15,20 +15,21 @@ from heapq import heappop, heappush
 # priority queue
 
 class pr:
-	def __init__(self):
-		self.q = []
+  def __init__(self):
+    self.q = []
 
-	def add(self, item):
-		heappush(self.q, item)
+    # item being the matrix, f the sum of h + g, c being the cost(aka, g)
+  def add(self, f, item, c):
+    heappush(self.q, (f, item, c))
 
-	def get(self):
-		return heappop(self.q)
+  def get(self):
+    return heappop(self.q)[1]
 
-	def look(self):
-		return (self.q[0])
+  def look(self):
+    return (self.q[0])
 
-	def __len__(self):
-		return (len(self.q))
+  def __len__(self):
+    return (len(self.q))
 
 
 
