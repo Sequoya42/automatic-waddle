@@ -57,3 +57,6 @@ def main(argv):
 
 if __name__ == '__main__':
   main(sys.argv)
+
+#todo
+  # efficient manhatan with lookup table instead of computing every time
