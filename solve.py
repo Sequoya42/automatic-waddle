@@ -26,31 +26,25 @@ class Astar:
     self.man_init = self.pre_manhatan(initial)
 
   def solve(self):
-    # parents will be the closed list, containing the parent, and the cost
+    # parents will be the closed list, containing the parent, the priority, the cost, and the direction
     cost = 0
     priority = 0
-    # print(self.man_goal)
-    # print(self.man_init)
-    # exit()
     self.manhatan_distance(self.start)
     self.parents[str(self.start)] = (None, 0, 0, 0)
     open = p.pr()
     open.add(0, self.start, cost)
     j = 0
     while open:
-       print("\t\t\t\t\tWHILE\t\t\t")
        j += 1
        current = open.get()
        if current == self.goal:
         return self.print_solution(current)
        parent = self.parents[str(current)]
-       # cost = parent[2] + 1
        cost = self.parents[str(current)][2] + 1
        old_f = parent[1] - parent[2]
        direction = parent[3]
        for new_state in self.get_next_states(current, direction):
-         # priority = cost + self.update_manhatan(new_state, old_f)
-         if str(new_state[0]) not in self.parents or cost < self.parents[str(new_state[0])][2]:
+         if str(new_state[0]) not in self.parents:# or cost < self.parents[str(new_state[0])][2]:
            priority = self.f(new_state) + cost
            open.add(priority, new_state[0], cost)
            self.parents[str(new_state[0])] = (current, priority, cost, new_state[2])
@@ -70,8 +64,6 @@ class Astar:
       rev += [cur]
       cur = self.parents[str(cur)][0]
     print("Length of path:", z)
-    for i in rev[::-1]:
-      self.print_matrix(i)
 
   def print_matrix(self, m):
     n = self.n
@@ -119,8 +111,6 @@ class Astar:
       y = abs(m[0] - f[0])
       x = abs(m[1] - f[1])
       dist += x + y
-      print("DIST MAN: ", dist)
-      self.print_matrix(matrix[0])
       return (dist)
     
   def manhatan_distance(self, matrix):
@@ -133,6 +123,4 @@ class Astar:
       y = abs(m[0] - goal[0])
       x = abs(m[1] - goal[1])
       dist += x + y
-    print(dist)
-    self.print_matrix(matrix)
     return (dist)

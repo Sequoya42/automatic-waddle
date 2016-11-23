@@ -6,7 +6,7 @@
 #    By: rbaum <rbaum@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2016/11/05 23:28:27 by rbaum             #+#    #+#              #
-#    Updated: 2016/11/05 23:29:00 by rbaum            ###   ########.fr        #
+#    Updated: 2016/11/23 01:13:41 by rbaum            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -52,6 +52,8 @@ def main(argv):
   verify.check_validity(matrix, spiral, n)
   print("After check, go to resolve")
   astar = solve.Astar(spiral, matrix, n)
+  astar.solve()
+  astar = solve.Astar(matrix, spiral, n)
   astar.solve()
 
 
