@@ -44,7 +44,7 @@ class Astar:
        old_f = parent[1] - parent[2]
        direction = parent[3]
        for new_state in self.get_next_states(current, direction):
-         if str(new_state[0]) not in self.parents:# or cost < self.parents[str(new_state[0])][2]:
+         if str(new_state[0]) not in self.parents or cost < self.parents[str(new_state[0])][2]:
            priority = self.f(new_state) + cost
            open.add(priority, new_state[0], cost)
            self.parents[str(new_state[0])] = (current, priority, cost, new_state[2])
@@ -64,6 +64,9 @@ class Astar:
       rev += [cur]
       cur = self.parents[str(cur)][0]
     print("Length of path:", z)
+    for i in rev[::]:
+      self.print_matrix(i)
+
 
   def print_matrix(self, m):
     n = self.n

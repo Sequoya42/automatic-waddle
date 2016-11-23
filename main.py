@@ -51,8 +51,8 @@ def main(argv):
   spiral = verify.spiral_matrix(n)
   verify.check_validity(matrix, spiral, n)
   print("After check, go to resolve")
-  astar = solve.Astar(spiral, matrix, n)
-  astar.solve()
+  # astar = solve.Astar(spiral, matrix, n)
+  # astar.solve()
   astar = solve.Astar(matrix, spiral, n)
   astar.solve()
 
