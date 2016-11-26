@@ -53,8 +53,18 @@ def main(argv):
   print("After check, go to resolve")
   # astar = solve.Astar(spiral, matrix, n)
   # astar.solve()
-  astar = solve.Astar(matrix, spiral, n)
-  astar.solve()
+  astar2 = solve.Astar(matrix, spiral, n)
+  astar2.solve()
+  # print("SeCOND RUN")
+  # astar = solve.Astar(spiral, matrix, n)
+  # astar.solve()
+
+  print("IDASTAR RUN")
+  # ida = solve.Idastar(matrix, spiral, n)
+  ida2 = solve.Idastar(spiral, matrix, n)
+  # ida.solve()
+  print("Second run")
+  ida2.solve()
 
 
 if __name__ == '__main__':

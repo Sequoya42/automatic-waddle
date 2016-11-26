@@ -11,49 +11,26 @@
 # **************************************************************************** #
 
 import pr_queue as p
-import misc
 import time
+import heapq as hq
 
-class Astar:
-  __slots__ = ['cur', 'goal', 'length', 'n', 'parents', 'start', 'man_goal', 'man_init']
+class Solver:
+  # __slots__ = ['cur', 'goal', 'length', 'n', 'parents', 'start', 'man_goal', 'man_init']
   def __init__(self, goal, initial, n):
+    self.goal =  goal
+    self.solved = 0
     self.start = initial
-    self.goal = goal
+    self.path = []
     self.length = len(goal)
     self.n = n
+    self.queue = []
     self.parents = {}
     self.man_goal = self.pre_manhatan(goal)
-    self.man_init = self.pre_manhatan(initial)
 
-  def solve(self):
-    # parents will be the closed list, containing the parent, the priority, the cost, and the direction
-    cost = 0
-    priority = 0
-    self.manhatan_distance(self.start)
-    self.parents[str(self.start)] = (None, 0, 0, 0)
-    open = p.pr()
-    open.add(0, self.start, cost)
-    j = 0
-    while open:
-       j += 1
-       current = open.get()
-       if current == self.goal:
-        return self.print_solution(current)
-       parent = self.parents[str(current)]
-       cost = self.parents[str(current)][2] + 1
-       old_f = parent[1] - parent[2]
-       direction = parent[3]
-       for new_state in self.get_next_states(current, direction):
-         if str(new_state[0]) not in self.parents or cost < self.parents[str(new_state[0])][2]:
-           priority = self.f(new_state) + cost
-           open.add(priority, new_state[0], cost)
-           self.parents[str(new_state[0])] = (current, priority, cost, new_state[2])
- 
   def swap(self, pos, new, mtx):
     ret = mtx[:]
     ret[pos], ret[new] = ret[new], ret[pos]
     return ret
-
 
   def print_solution(self, cur):
     rev = []
@@ -62,11 +39,11 @@ class Astar:
     while cur != None:
       z += 1
       rev += [cur]
+      print (cur)
       cur = self.parents[str(cur)][0]
     print("Length of path:", z)
-    for i in rev[::]:
-      self.print_matrix(i)
-
+    # for i in rev[::]:
+      # self.print_matrix(i)
 
   def print_matrix(self, m):
     n = self.n
@@ -78,20 +55,20 @@ class Astar:
         print ("")
     print("-----------")
 
-  def get_next_states(self, mtx, dir):#direction
+  def get_next_states(self, mtx, direction = 5):#direction
     n = self.n
     pos = mtx.index(0)
-    if dir != 3 and pos > 0 and pos % n:
-     yield (self.swap(pos, pos - 1, mtx),pos, 1)
-    if dir != 4 and pos > n:
-     yield (self.swap(pos, pos - n, mtx),pos, 2)
-    if dir != 1 and pos < self.length and (pos + 1) % n: 
+    if  direction != 1 and pos < self.length and (pos + 1) % n: 
       yield (self.swap(pos, pos + 1, mtx),pos, 3)
-    if dir != 2 and pos < self.length - self.n :
+    if  direction != 2 and pos < self.length - self.n:
       yield (self.swap(pos, pos + n, mtx),pos, 4)
+    if  direction != 3 and pos > 0 and pos % n:
+     yield (self.swap(pos, pos - 1, mtx),pos, 1)
+    if  direction != 4 and pos > n - 1:
+     yield (self.swap(pos, pos - n, mtx),pos, 2)
 
-  def f(self, matrix):
-    return (self.manhatan_distance(matrix[0]))
+  def h(self, matrix):
+    return (self.manhatan_distance(matrix))
 
   def get_xy(self, value):
     y = value // self.n
@@ -108,13 +85,6 @@ class Astar:
       dict[i] = (m[0], m[1])
     return (dict)
 
-  def update_manhatan(self, matrix, dist):
-      m = self.get_xy(matrix[0].index(matrix[1]))
-      f = self.get_xy(self.goal.index(matrix[1]))
-      y = abs(m[0] - f[0])
-      x = abs(m[1] - f[1])
-      dist += x + y
-      return (dist)
     
   def manhatan_distance(self, matrix):
     goal = self.goal
@@ -127,3 +97,71 @@ class Astar:
       x = abs(m[1] - goal[1])
       dist += x + y
     return (dist)
+
+
+class Astar(Solver):
+
+    def solve(self):
+      # parents will be the closed list, containing the parent, the priority, the cost, and the direction 
+      cost = 0
+      tt = self.h(self.start)
+      self.parents[str(self.start)] = (None, 0, 0, 0)
+      open_list = p.pr()
+      open_list.add(tt, cost, self.start)
+      while open_list:
+        (old_f, cost, current) = open_list.get() 
+        cost += 1 
+        if current == self.goal: 
+          return self.print_solution(current)
+        parent = self.parents[str(current)]
+        direction = parent[3]
+        for new_state in self.get_next_states(current, direction): 
+          if str(new_state[0]) not in self.parents:
+            priority = self.h(new_state[0]) + cost
+            open_list.add(priority, cost, new_state[0])
+            self.parents[str(new_state[0])] = (current, priority, cost, new_state[2])
+
+
+class Idastar(Solver):
+
+  def dfs(self, state, bound, cost):
+    new_bound = 99999999
+    self.start = state
+    if self.h(state) == 0:
+      self.path += [state]
+      self.solved = 1
+      return 0
+    cost += 1
+    for ns in self.get_next_states(state):
+      if cost + self.h(ns[0]) <= bound:
+        b = cost + self.dfs(ns[0], bound - cost, cost)
+      else:
+        b = cost + self.h(ns[0])
+      if self.solved:
+        print("COST IS ", cost)
+        self.path += [state]
+        return b
+      new_bound = min(new_bound, b)
+    return new_bound
+
+
+  def solve(self):
+    cost = 0
+    current = self.start
+    bound = self.h(self.start)
+    print("Initial bound", bound)
+    while True:
+      print("while", bound)
+      r = self.dfs(current, bound, 0)
+      if self.solved:
+        print("GOAL FOUND", r)
+        for i in self.path[::-1]:
+          print(i)
+        return (0)
+      elif r == -1:
+        exit("PROBL")
+      else:
+        bound = r
+
+    pass
+

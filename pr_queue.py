@@ -11,7 +11,7 @@
 # **************************************************************************** #
 
 from heapq import heappop, heappush
-
+import time
 # priority queue
 
 class pr:
@@ -19,13 +19,11 @@ class pr:
     self.q = []
 
     # item being the matrix, f the sum of h + g, c being the cost(aka, g)
-  def add(self, f, item, c):
-    # print(item)
-    if item not in self.q:
-      heappush(self.q, (f, item, c))
+  def add(self, f, c, item):
+    heappush(self.q, (f, c, item))
 
   def get(self):
-    return heappop(self.q)[1]
+    return heappop(self.q)
 
   def look(self):
     return (self.q[0])
