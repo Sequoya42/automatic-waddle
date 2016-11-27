@@ -25,7 +25,9 @@ class Solver:
     self.n = n
     self.queue = []
     self.parents = {}
+    self.col  = [[self.goal[i + (j * self.n)] for j in range(self.n)] for i in range(self.n)]
     self.man_goal = self.pre_manhatan(goal)
+    self.dist = self.manhatan_distance(initial)
 
   def swap(self, pos, new, mtx):
     ret = mtx[:]
@@ -39,7 +41,6 @@ class Solver:
     while cur != None:
       z += 1
       rev += [cur]
-      print(cur)
       cur = self.parents[str(cur)][0]
     print("Length of path:", z)
     # for i in rev[::]:
@@ -59,13 +60,13 @@ class Solver:
     n = self.n
     pos = mtx.index(0)
     if  direction != 1 and pos < self.length and (pos + 1) % n: 
-      yield (self.swap(pos, pos + 1, mtx),pos, 3)
+      yield (self.swap(pos, pos + 1, mtx), (pos, pos + 1), 3)
     if  direction != 3 and pos > 0 and pos % n:
-     yield (self.swap(pos, pos - 1, mtx),pos, 1)
+     yield (self.swap(pos, pos - 1, mtx), (pos, pos - 1), 1)
     if  direction != 4 and pos > n - 1:
-     yield (self.swap(pos, pos - n, mtx),pos, 2)
+     yield (self.swap(pos, pos - n, mtx), (pos, pos - n), 2)
     if  direction != 2 and pos < self.length - self.n:
-      yield (self.swap(pos, pos + n, mtx),pos, 4)
+      yield (self.swap(pos, pos + n, mtx), (pos, pos + n), 4)
 
   def h(self, matrix):
     return (self.manhatan_distance(matrix))
@@ -85,34 +86,61 @@ class Solver:
       dict[i] = (m[0], m[1])
     return (dict)
 
-  def linear_conflict(self, matrix, i):
-    # col = []
-    rr = 0
-    line = self.goal[i - self.n : i]
-    for j in range(i - self.n, i):
-      if matrix[j] in line and matrix[j] is not self.goal[j]:
-        rr += 1
-    return rr
 
-  def col_conflict(self, matrix):
-    return 0
-    pass
+  def update_manhatan(self, state, dist):
+    matrix, pos, direction = state
+    value = matrix[pos[0]]
+    print("Value, pos[0], pos[1] : ", value, pos[0], pos[1])
+    goal = self.man_goal[value]
+    m = self.get_xy(pos[0])
+    m2 = self.get_xy(pos[1])
+    print("m and m2: ", m , m2)
+    y = abs(m[0] - goal[0])
+    x = abs(m[1] - goal[1])
+    y2 = abs(m2[0] - goal[0])
+    x2 = abs(m2[1] - goal[1])
+    dist -= (x2 + y2)
+    dist += (x + y)
+    return (dist)
+    # pass
+
+
+  #   pass
   def manhatan_distance(self, matrix):
-    goal = self.goal
     l = len(matrix)
     dist = 0
+    # dist = self.linear_conflict(matrix)
     for i in range(1, l):
-      if (i  + 1) % self.n == 0:
-        dist += self.linear_conflict(matrix, i + 1)
       m = self.get_xy(matrix.index(i))
-      # if i < l - 1 and matrix[i + 1] == self.goal[i] and self.goal[i + 1] == matrix[i]:
-        # dist += 2
       goal = self.man_goal[i]
       y = abs(m[0] - goal[0])
       x = abs(m[1] - goal[1])
       dist += x + y
-    dist += self.col_conflict(matrix)
     return (dist)
+
+  def count_conf(self, cur):
+    rr = 0
+    for i in cur:
+      for j in cur[i:]:
+        if (self.goal.index(i) > self.goal.index(j)): 
+          rr += 2
+    return rr
+
+  def col_conflict(self, cur_col):
+    rr = 0
+    res = []
+    for i in range(self.n):
+      for cc in cur_col[i]:
+        if cc in self.col[i]:
+          res += [cc]
+      rr += self.count_conf(res)
+      res = []
+    return rr
+
+  def linear_conflict(self, matrix):
+    cur_col  = [[matrix[i + (j * self.n)] for j in range(self.n)] for i in range(self.n)]
+    # cur_row  = [[matrix[j + (i * self.n)] for j in range(self.n)] for i in range(self.n)]
+    return self.col_conflict(cur_col)# + self.col_conflict(cur_row)
 
 
 class Astar(Solver):
@@ -132,9 +160,13 @@ class Astar(Solver):
         parent = self.parents[str(current)]
         direction = parent[3]
         for new_state in self.get_next_states(current, direction):
+          hht = self.update_manhatan(new_state, old_h)
           hh = self.h(new_state[0])
+          print("man and update: \t", hh, hht)
+          self.print_matrix(new_state[0])
+          time.sleep(0.1)
           priority = hh + cost
-          if str(new_state[0]) not in self.parents and hh <= old_h + 2:
+          if str(new_state[0]) not in self.parents:# and hh <= old_h + 2:
             # print(priority)
             open_list.add(priority, cost, new_state[0], hh)
             self.parents[str(new_state[0])] = (current, priority, cost, new_state[2])
