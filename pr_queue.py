@@ -19,8 +19,8 @@ class pr:
     self.q = []
 
     # item being the matrix, f the sum of h + g, c being the cost(aka, g)
-  def add(self, f, c, item):
-    heappush(self.q, (f, c, item))
+  def add(self, f, c, item, h):
+    heappush(self.q, (f, c, item, h))
 
   def get(self):
     return heappop(self.q)

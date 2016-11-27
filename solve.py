@@ -39,7 +39,7 @@ class Solver:
     while cur != None:
       z += 1
       rev += [cur]
-      print (cur)
+      print(cur)
       cur = self.parents[str(cur)][0]
     print("Length of path:", z)
     # for i in rev[::]:
@@ -60,12 +60,12 @@ class Solver:
     pos = mtx.index(0)
     if  direction != 1 and pos < self.length and (pos + 1) % n: 
       yield (self.swap(pos, pos + 1, mtx),pos, 3)
-    if  direction != 2 and pos < self.length - self.n:
-      yield (self.swap(pos, pos + n, mtx),pos, 4)
     if  direction != 3 and pos > 0 and pos % n:
      yield (self.swap(pos, pos - 1, mtx),pos, 1)
     if  direction != 4 and pos > n - 1:
      yield (self.swap(pos, pos - n, mtx),pos, 2)
+    if  direction != 2 and pos < self.length - self.n:
+      yield (self.swap(pos, pos + n, mtx),pos, 4)
 
   def h(self, matrix):
     return (self.manhatan_distance(matrix))
@@ -85,17 +85,33 @@ class Solver:
       dict[i] = (m[0], m[1])
     return (dict)
 
-    
+  def linear_conflict(self, matrix, i):
+    # col = []
+    rr = 0
+    line = self.goal[i - self.n : i]
+    for j in range(i - self.n, i):
+      if matrix[j] in line and matrix[j] is not self.goal[j]:
+        rr += 1
+    return rr
+
+  def col_conflict(self, matrix):
+    return 0
+    pass
   def manhatan_distance(self, matrix):
     goal = self.goal
     l = len(matrix)
     dist = 0
     for i in range(1, l):
+      if (i  + 1) % self.n == 0:
+        dist += self.linear_conflict(matrix, i + 1)
       m = self.get_xy(matrix.index(i))
+      # if i < l - 1 and matrix[i + 1] == self.goal[i] and self.goal[i + 1] == matrix[i]:
+        # dist += 2
       goal = self.man_goal[i]
       y = abs(m[0] - goal[0])
       x = abs(m[1] - goal[1])
       dist += x + y
+    dist += self.col_conflict(matrix)
     return (dist)
 
 
@@ -107,42 +123,85 @@ class Astar(Solver):
       tt = self.h(self.start)
       self.parents[str(self.start)] = (None, 0, 0, 0)
       open_list = p.pr()
-      open_list.add(tt, cost, self.start)
+      open_list.add(tt, cost, self.start, tt)
       while open_list:
-        (old_f, cost, current) = open_list.get() 
+        (old_f, cost, current, old_h) = open_list.get()
         cost += 1 
         if current == self.goal: 
           return self.print_solution(current)
         parent = self.parents[str(current)]
         direction = parent[3]
-        for new_state in self.get_next_states(current, direction): 
-          if str(new_state[0]) not in self.parents:
-            priority = self.h(new_state[0]) + cost
-            open_list.add(priority, cost, new_state[0])
+        for new_state in self.get_next_states(current, direction):
+          hh = self.h(new_state[0])
+          priority = hh + cost
+          if str(new_state[0]) not in self.parents and hh <= old_h + 2:
+            # print(priority)
+            open_list.add(priority, cost, new_state[0], hh)
             self.parents[str(new_state[0])] = (current, priority, cost, new_state[2])
 
 
 class Idastar(Solver):
-
-  def dfs(self, state, bound, cost):
+  def dfs(self, state, bound, cost = 0, direction = 5):
     new_bound = 99999999
     self.start = state
+    b = 0
     if self.h(state) == 0:
       self.path += [state]
       self.solved = 1
       return 0
     cost += 1
-    for ns in self.get_next_states(state):
+    for ns in self.get_states(state, direction):
       if cost + self.h(ns[0]) <= bound:
-        b = cost + self.dfs(ns[0], bound - cost, cost)
+        b = cost +  self.dfs(ns[0], bound - cost, cost, ns[2])
       else:
         b = cost + self.h(ns[0])
       if self.solved:
-        print("COST IS ", cost)
         self.path += [state]
         return b
       new_bound = min(new_bound, b)
     return new_bound
+
+
+  def get_states(self, mtx, direction = 5):#direction
+    n = self.n
+    pos = mtx.index(0)
+    if direction == 1 or direction == 3:
+      if  direction != 4 and pos > n - 1:
+       yield (self.swap(pos, pos - n, mtx),pos, 2)
+      if  direction != 2 and pos < self.length - self.n:
+        yield (self.swap(pos, pos + n, mtx),pos, 4)
+      if  direction != 1 and pos < self.length and (pos + 1) % n: 
+        yield (self.swap(pos, pos + 1, mtx),pos, 3)
+      if  direction != 3 and pos > 0 and pos % n:
+       yield (self.swap(pos, pos - 1, mtx),pos, 1)
+    else:
+      if  direction != 1 and pos < self.length and (pos + 1) % n: 
+        yield (self.swap(pos, pos + 1, mtx),pos, 3)
+      if  direction != 3 and pos > 0 and pos % n:
+       yield (self.swap(pos, pos - 1, mtx),pos, 1)
+      if  direction != 4 and pos > n - 1:
+       yield (self.swap(pos, pos - n, mtx),pos, 2)
+      if  direction != 2 and pos < self.length - self.n:
+        yield (self.swap(pos, pos + n, mtx),pos, 4)
+
+
+  # def it_dfs(self, state, bound, cost = 0, direction = 5):#iterative dfs, not fully implemented yet
+  #   open_list = []
+  #   new_bound = 99999999
+  #   open_list.append(state)
+  #   while open_list:
+  #     state = open_list[-1]
+  #     cost += 1
+  #     for ns in self.get_next_states(state, direction):
+  #       new_bound = min(new_bound, f)
+  #       f = self.h(ns[0]) + cost
+  #       if f <= bound:
+  #         open_list.append(ns[0])
+  #       if self.h(ns[0]) == 0:
+  #         print("found a solution")
+  #         for i in open_list:
+  #           print(i)
+  #         exit("")
 
 
   def solve(self):
@@ -151,12 +210,13 @@ class Idastar(Solver):
     bound = self.h(self.start)
     print("Initial bound", bound)
     while True:
-      print("while", bound)
-      r = self.dfs(current, bound, 0)
+      r = self.dfs(current, bound)
       if self.solved:
         print("GOAL FOUND", r)
+        jj = 0
         for i in self.path[::-1]:
-          print(i)
+          jj += 1
+        print(jj - 1)
         return (0)
       elif r == -1:
         exit("PROBL")

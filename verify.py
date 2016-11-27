@@ -24,16 +24,6 @@ def count_inversions(matrix, n):
   if ss % 2: return ("other-half", inv_matrix, rowmat)
   else: return ("identity", inv_matrix, rowmat)
 
-def count_permutations(matrix, n):
-  j = 0
-  ind = matrix.index(0)
-  m = matrix[:ind] + matrix[ind + 1:]
-  rang = 0 - 1
-  for i in range(0, rang):
-    if m[i] is not i + 1:
-      j += 1
-  return (j)
-
 def check_validity(matrix, spiral, n):
   mi = count_inversions(matrix, n)
   si = count_inversions(spiral, n)

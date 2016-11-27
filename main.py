@@ -58,7 +58,7 @@ def main(argv):
   # print("SeCOND RUN")
   # astar = solve.Astar(spiral, matrix, n)
   # astar.solve()
-
+  exit(0)
   print("IDASTAR RUN")
   # ida = solve.Idastar(matrix, spiral, n)
   ida2 = solve.Idastar(spiral, matrix, n)
@@ -72,3 +72,5 @@ if __name__ == '__main__':
 
 #todo
   # efficient manhatan with lookup table instead of computing every time
+#implement rbfs
+#implement columns [pre compute?] conflict 
