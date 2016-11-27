@@ -53,13 +53,13 @@ def main(argv):
   print("After check, go to resolve")
   # astar = solve.Astar(spiral, matrix, n)
   # astar.solve()
-  astar2 = solve.Astar(spiral, matrix, n)
+  # astar2 = solve.Astar(spiral, matrix, n)
   # astar2 = solve.Astar(matrix, spiral, n)
-  astar2.solve()
+  # astar2.solve()
+  # exit(0)
   # print("SeCOND RUN")
   # astar = solve.Astar(spiral, matrix, n)
   # astar.solve()
-  exit(0)
   print("IDASTAR RUN")
   # ida = solve.Idastar(matrix, spiral, n)
   ida2 = solve.Idastar(spiral, matrix, n)
@@ -72,6 +72,8 @@ if __name__ == '__main__':
   main(sys.argv)
 
 #todo
-  # efficient manhatan with lookup table instead of computing every time
+
 #implement rbfs
 #implement columns [pre compute?] conflict 
+# verify by hand if values are correct
+# try to implement them as the manhatan, for re update instead of calculating again

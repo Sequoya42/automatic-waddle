@@ -89,12 +89,9 @@ class Solver:
 
   def update_manhatan(self, state, dist):
     matrix, pos, direction = state
-    value = matrix[pos[0]]
-    print("Value, pos[0], pos[1] : ", value, pos[0], pos[1])
-    goal = self.man_goal[value]
+    goal = self.man_goal[matrix[pos[0]]]
     m = self.get_xy(pos[0])
     m2 = self.get_xy(pos[1])
-    print("m and m2: ", m , m2)
     y = abs(m[0] - goal[0])
     x = abs(m[1] - goal[1])
     y2 = abs(m2[0] - goal[0])
@@ -103,7 +100,6 @@ class Solver:
     dist += (x + y)
     return (dist)
     # pass
-
 
   #   pass
   def manhatan_distance(self, matrix):
@@ -160,20 +156,38 @@ class Astar(Solver):
         parent = self.parents[str(current)]
         direction = parent[3]
         for new_state in self.get_next_states(current, direction):
-          hht = self.update_manhatan(new_state, old_h)
-          hh = self.h(new_state[0])
-          print("man and update: \t", hh, hht)
-          self.print_matrix(new_state[0])
-          time.sleep(0.1)
+          hh = self.update_manhatan(new_state, old_h)
           priority = hh + cost
-          if str(new_state[0]) not in self.parents:# and hh <= old_h + 2:
-            # print(priority)
+          if str(new_state[0]) not in self.parents:
             open_list.add(priority, cost, new_state[0], hh)
             self.parents[str(new_state[0])] = (current, priority, cost, new_state[2])
 
 
 class Idastar(Solver):
-  def dfs(self, state, bound, cost = 0, direction = 5):
+
+  def get_states(self, mtx, direction = 5):#direction
+    n = self.n
+    pos = mtx.index(0)
+    if direction == 1 or direction == 3:
+      if  direction != 4 and pos > n - 1:
+       yield (self.swap(pos, pos - n, mtx), (pos, pos - n), 2)
+      if  direction != 2 and pos < self.length - self.n:
+        yield (self.swap(pos, pos + n, mtx), (pos, pos + n), 4)
+      if  direction != 1 and pos < self.length and (pos + 1) % n: 
+        yield (self.swap(pos, pos + 1, mtx), (pos, pos + 1), 3)
+      if  direction != 3 and pos > 0 and pos % n:
+       yield (self.swap(pos, pos - 1, mtx), (pos, pos - 1), 1)
+    else:
+      if  direction != 1 and pos < self.length and (pos + 1) % n: 
+        yield (self.swap(pos, pos + 1, mtx), (pos, pos + 1), 3)
+      if  direction != 3 and pos > 0 and pos % n:
+       yield (self.swap(pos, pos - 1, mtx), (pos, pos - 1), 1)
+      if  direction != 4 and pos > n - 1:
+       yield (self.swap(pos, pos - n, mtx), (pos, pos - n), 2)
+      if  direction != 2 and pos < self.length - self.n:
+        yield (self.swap(pos, pos + n, mtx), (pos, pos + n), 4)
+
+  def dfs(self, state, bound, cost, direction, old_h):
     new_bound = 99999999
     self.start = state
     b = 0
@@ -183,38 +197,35 @@ class Idastar(Solver):
       return 0
     cost += 1
     for ns in self.get_states(state, direction):
-      if cost + self.h(ns[0]) <= bound:
-        b = cost +  self.dfs(ns[0], bound - cost, cost, ns[2])
+      hh = self.update_manhatan(ns, old_h)
+      if cost + hh <= bound:
+        b = cost + self.dfs(ns[0], bound - cost, cost, ns[2], hh)
       else:
-        b = cost + self.h(ns[0])
+        b = cost + hh
       if self.solved:
         self.path += [state]
         return b
       new_bound = min(new_bound, b)
     return new_bound
 
-
-  def get_states(self, mtx, direction = 5):#direction
-    n = self.n
-    pos = mtx.index(0)
-    if direction == 1 or direction == 3:
-      if  direction != 4 and pos > n - 1:
-       yield (self.swap(pos, pos - n, mtx),pos, 2)
-      if  direction != 2 and pos < self.length - self.n:
-        yield (self.swap(pos, pos + n, mtx),pos, 4)
-      if  direction != 1 and pos < self.length and (pos + 1) % n: 
-        yield (self.swap(pos, pos + 1, mtx),pos, 3)
-      if  direction != 3 and pos > 0 and pos % n:
-       yield (self.swap(pos, pos - 1, mtx),pos, 1)
-    else:
-      if  direction != 1 and pos < self.length and (pos + 1) % n: 
-        yield (self.swap(pos, pos + 1, mtx),pos, 3)
-      if  direction != 3 and pos > 0 and pos % n:
-       yield (self.swap(pos, pos - 1, mtx),pos, 1)
-      if  direction != 4 and pos > n - 1:
-       yield (self.swap(pos, pos - n, mtx),pos, 2)
-      if  direction != 2 and pos < self.length - self.n:
-        yield (self.swap(pos, pos + n, mtx),pos, 4)
+  def solve(self):
+    cost = 0
+    current = self.start
+    bound = self.h(self.start)
+    print("Initial bound", bound)
+    while True:
+      r = self.dfs(current, bound, 0, 5, self.dist)
+      if self.solved:
+        print("GOAL FOUND", r)
+        jj = 0
+        for i in self.path[::-1]:
+          jj += 1
+        print(jj - 1)
+        return (0)
+      elif r < 0:
+        exit("PROBL")
+      else:
+        bound = r
 
 
   # def it_dfs(self, state, bound, cost = 0, direction = 5):#iterative dfs, not fully implemented yet
@@ -236,24 +247,6 @@ class Idastar(Solver):
   #         exit("")
 
 
-  def solve(self):
-    cost = 0
-    current = self.start
-    bound = self.h(self.start)
-    print("Initial bound", bound)
-    while True:
-      r = self.dfs(current, bound)
-      if self.solved:
-        print("GOAL FOUND", r)
-        jj = 0
-        for i in self.path[::-1]:
-          jj += 1
-        print(jj - 1)
-        return (0)
-      elif r == -1:
-        exit("PROBL")
-      else:
-        bound = r
 
-    pass
-
+class Bidira(Solver):
+  pass
