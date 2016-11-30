@@ -17,6 +17,7 @@ import heapq as hq
 class Solver:
   # __slots__ = ['cur', 'goal', 'length', 'n', 'parents', 'start', 'man_goal', 'man_init']
   def __init__(self, goal, initial, n):
+    self.expanded = 0
     self.goal =  goal
     self.solved = 0
     self.start = initial
@@ -26,6 +27,7 @@ class Solver:
     self.queue = []
     self.parents = {}
     self.col  = [[self.goal[i + (j * self.n)] for j in range(self.n)] for i in range(self.n)]
+    self.line = [[self.goal[j + (i * self.n)] for j in range(self.n)] for i in range(self.n)]
     self.man_goal = self.pre_manhatan(goal)
     self.dist = self.manhatan_distance(initial)
 
@@ -87,76 +89,151 @@ class Solver:
     return (dict)
 
 
-  def update_manhatan(self, state, dist):
+  def update_manhatan(self, dist, state, parent_state):
+    # print("\33[94m")
     matrix, pos, direction = state
+
     goal = self.man_goal[matrix[pos[0]]]
     m = self.get_xy(pos[0])
     m2 = self.get_xy(pos[1])
-    y = abs(m[0] - goal[0])
-    x = abs(m[1] - goal[1])
-    y2 = abs(m2[0] - goal[0])
-    x2 = abs(m2[1] - goal[1])
+    y, x = abs(m[0] - goal[0]), abs(m[1] - goal[1])
+    y2, x2 = abs(m2[0] - goal[0]), abs(m2[1] - goal[1])
     dist -= (x2 + y2)
     dist += (x + y)
+    dist += self.update_conflict(matrix, pos[0], direction, dist, parent_state)
+    # ll1 = self.linear_conflict(matrix)
+    # ll2 = self.linear_conflict(parent_state)
+    # print(ll1, ll2)
+    # print("UPDATES\t\t", dist, lin, dist+lin, direction)
     return (dist)
     # pass
 
   #   pass
   def manhatan_distance(self, matrix):
+    # print("\33[92m")
     l = len(matrix)
     dist = 0
-    # dist = self.linear_conflict(matrix)
+    lin = 0
+    lin = self.linear_conflict(matrix)
     for i in range(1, l):
       m = self.get_xy(matrix.index(i))
       goal = self.man_goal[i]
       y = abs(m[0] - goal[0])
       x = abs(m[1] - goal[1])
       dist += x + y
+    dist += lin
+    # print("REGULAR\t\t", dist, lin, dist + lin)
     return (dist)
+
+#RANGE SHIT
+  def update_conflict(self, matrix, pos, direction, dist, parent_state):
+    (y, x) = self.get_xy(pos)
+    if direction == 1:
+      i1, i2 = x - 1, x + 1
+      cur_col  = [[matrix[j + (i * self.n)]for i in range(self.n)] for j in range(i1, i2)] 
+      old_col = [[parent_state[j + (i * self.n)]for i in range(self.n)] for j in range(i1, i2)] 
+    elif direction == 3:
+      i1, i2 = x , x + 2
+      cur_col  = [[matrix[j + (i * self.n)]for i in range(self.n)] for j in range(i1, i2)] 
+      old_col = [[parent_state[j + (i * self.n)]for i in range(self.n)] for j in range(i1, i2)] 
+    elif direction == 2:
+      i1, i2 = y - 1, y + 1
+      cur_col  = [[matrix[j + (i * self.n)] for j in range(self.n)] for i in range(i1, i2)]
+      old_col  = [[parent_state[j + (i * self.n)] for j in range(self.n)] for i in range(i1, i2)]
+    elif direction == 4:
+      i1, i2 = y, y + 2
+      cur_col  = [[matrix[j + (i * self.n)] for j in range(self.n)] for i in range(i1, i2)]
+      old_col  = [[parent_state[j + (i * self.n)] for j in range(self.n)] for i in range(i1, i2)]
+      # ------------
+    if direction == 2 or direction == 4:
+      lin = self.conflict(cur_col, self.line)
+      lin2= self.conflict(old_col, self.line)
+      # dist += lin
+    else:
+      lin = self.conflict(cur_col, self.col)
+      lin2= self.conflict(old_col, self.col)
+      # dist += lin
+    # print("qeg3", lin, lin2)
+    # self.print_matrix(matrix)
+    # self.print_matrix(parent_state)
+    # print("AND CUR COL AND OLD_COL")      
+    # print(cur_col)
+    # print(old_col)
+    # exit(0)
+    return (lin - lin2)
+
+
 
   def count_conf(self, cur):
     rr = 0
+    # print(cur)
     for i in cur:
       for j in cur[i:]:
         if (self.goal.index(i) > self.goal.index(j)): 
-          rr += 2
+          # print("Plus one", i, j)
+          rr += 1
     return rr
 
-  def col_conflict(self, cur_col):
+  def conflict(self,cur_col, vs):
     rr = 0
     res = []
-    for i in range(self.n):
+    for i in range(len(cur_col)):
       for cc in cur_col[i]:
-        if cc in self.col[i]:
+        if cc in vs[i] and cc is not 0:
           res += [cc]
       rr += self.count_conf(res)
       res = []
+    # print("RR IS ", rr)
+    # if rr > 0:
+    #   print(cur_col)
     return rr
 
   def linear_conflict(self, matrix):
     cur_col  = [[matrix[i + (j * self.n)] for j in range(self.n)] for i in range(self.n)]
-    # cur_row  = [[matrix[j + (i * self.n)] for j in range(self.n)] for i in range(self.n)]
-    return self.col_conflict(cur_col)# + self.col_conflict(cur_row)
+    cur_row  = [[matrix[j + (i * self.n)] for j in range(self.n)] for i in range(self.n)]
+    # self.print_matrix(self.start)
+    # self.print_matrix(self.goal)
+    # print(cur_col)
+    # print(self.col)
+    # x = self.conflict(cur_col, self.col)
+    # print(x)
+    # print(cur_row)
+    # print(self.line)
+    # y = self.conflict(cur_row, self.line)
+    # print(y)
+    # exit(0)
+    return self.conflict(cur_col, self.col) + self.conflict(cur_row, self.line)
 
+  # def linear_conflict(self, matrix):
+  #   cur_row  = [[matrix[j + (i * self.n)] for j in range(self.n)] for i in range(self.n)]
+  #   for i in cur_row:
+  #     for j in cur_row[i]:
+  #       if cur_row[i][j]
 
 class Astar(Solver):
 
     def solve(self):
       # parents will be the closed list, containing the parent, the priority, the cost, and the direction 
       cost = 0
-      tt = self.h(self.start)
       self.parents[str(self.start)] = (None, 0, 0, 0)
       open_list = p.pr()
-      open_list.add(tt, cost, self.start, tt)
+      open_list.add(self.dist, cost, self.start, self.dist)
       while open_list:
         (old_f, cost, current, old_h) = open_list.get()
+        self.expanded += 1
         cost += 1 
-        if current == self.goal: 
+        if current == self.goal:
+          print("Len parent", len(self.parents))
+          print("Len open:", self.expanded)
           return self.print_solution(current)
         parent = self.parents[str(current)]
         direction = parent[3]
         for new_state in self.get_next_states(current, direction):
-          hh = self.update_manhatan(new_state, old_h)
+          # print("\t\t\t\t\t\t\tfFOR", self.linear_conflict(current))
+          hh = self.h(new_state[0])
+          # hh = self.update_manhatan(old_h, new_state, current)
+          # print(hh, hht)
+          # time.sleep(0.1)
           priority = hh + cost
           if str(new_state[0]) not in self.parents:
             open_list.add(priority, cost, new_state[0], hh)
@@ -245,6 +322,35 @@ class Idastar(Solver):
   #         for i in open_list:
   #           print(i)
   #         exit("")
+
+
+class Nope(Solver):
+      def solve(self):
+        # parents will be the closed list, containing the parent, the priority, the cost, and the direction 
+        cost = 0
+        self.parents[str(self.start)] = (None, 0, 0, 0)
+        open_list = p.pr()
+        open_list.add(self.dist, cost, self.start, self.dist)
+        while open_list:
+          (old_f, cost, current, old_h) = open_list.get()
+          self.expanded += 1
+          cost += 1 
+          if current == self.goal:
+            print("Len parent", len(self.parents))
+            print("Len open:", self.expanded)
+            return self.print_solution(current)
+          parent = self.parents[str(current)]
+          direction = parent[3]
+          for new_state in self.get_next_states(current, direction):
+            # print("\t\t\t\t\t\t\tfFOR", self.linear_conflict(current))
+            # hh = self.h(new_state[0])
+            hh = self.update_manhatan(old_h, new_state, current)
+            # print(hh, hht)
+            # time.sleep(0.1)
+            priority = hh + cost
+            if str(new_state[0]) not in self.parents:
+              open_list.add(priority, cost, new_state[0], hh)
+              self.parents[str(new_state[0])] = (current, priority, cost, new_state[2])
 
 
 

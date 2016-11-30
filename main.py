@@ -54,9 +54,9 @@ def main(argv):
   # astar = solve.Astar(spiral, matrix, n)
   # astar.solve()
   # astar2 = solve.Astar(spiral, matrix, n)
-  # astar2 = solve.Astar(matrix, spiral, n)
-  # astar2.solve()
-  # exit(0)
+  astar2 = solve.Astar(matrix, spiral, n)
+  astar2.solve()
+  exit(0)
   # print("SeCOND RUN")
   # astar = solve.Astar(spiral, matrix, n)
   # astar.solve()
@@ -73,7 +73,12 @@ if __name__ == '__main__':
 
 #todo
 
-#implement rbfs
-#implement columns [pre compute?] conflict 
+#implement rbfs [Instead of IDA, and iterative instead of recursive version (ilbfs https://www.aaai.org/ocs/index.php/SOCS/SOCS15/paper/viewFile/10911/10632)]
+#implement columns [pre compute?] conflict
 # verify by hand if values are correct
 # try to implement them as the manhatan, for re update instead of calculating again
+# implement pattern database ||[or not, just a correct LC and WD]
+# make iterative dfs [to see if IDA* is really this slow]
+# Precompute and store a few (1024?) nodes from the goal state and search for all those
+# and take the one with the lowest cost [BFS to store all node from goal to a depth of X]
+# and bidirectionnal A* [or SMA*, should implement]
