@@ -10,7 +10,7 @@
 #                                                                              #
 # **************************************************************************** #
 
-import sys, verify, solve
+import sys, verify, Astar, Idastar
 
 def get_map(argv):
   try: 
@@ -53,8 +53,8 @@ def main(argv):
   print("After check, go to resolve")
   # astar = solve.Astar(spiral, matrix, n)
   # astar.solve()
-  # astar2 = solve.Astar(spiral, matrix, n)
-  astar2 = solve.Astar(matrix, spiral, n)
+  # astar2 = Astar.Astar(spiral, matrix, n)
+  astar2 = Astar.Astar(matrix, spiral, n)
   astar2.solve()
   exit(0)
   # print("SeCOND RUN")
@@ -82,3 +82,6 @@ if __name__ == '__main__':
 # Precompute and store a few (1024?) nodes from the goal state and search for all those
 # and take the one with the lowest cost [BFS to store all node from goal to a depth of X]
 # and bidirectionnal A* [or SMA*, should implement]
+
+# and check if f() or h() always lower in the solution (always decreasing)
+# and if so, can expand fewer nodes
