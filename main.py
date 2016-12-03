@@ -20,19 +20,17 @@ def get_map(argv):
   except Exception as error:
     exit("Invalid file")
 
-
 # should be possible to use string, and still use index, in much the same
 # way as list
 
 def matrix_validity(m, n):
   new = []
   for i in m:
+    if i == "": continue
     k = i.find('#')
-    if k == -1:
-      new += [i]
-    else:
-      new += [i[:k]]
-  verif = [i.replace(" ",  "") for i in new]
+    if k == -1: new += [i]
+    else: new += [i[:k]]
+  verif = (i.replace(" ",  "") for i in new)
   for i in verif:
     if not i.isdigit():
       exit("Digits only")

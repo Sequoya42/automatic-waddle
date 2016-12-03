@@ -74,13 +74,12 @@ class Solver:
     return (self.manhatan_distance(matrix))
 
   def get_xy(self, value):
-    y = value // self.n
-    x = value % self.n
-    return (y, x)
+    return (value // self.n, value % self.n)
     
   # heuristique
 
   def pre_manhatan(self, matrix):
+   # create dictionary key is tile number and value is pos (y, x)
     dict = {}
     l = len(matrix)
     for i in range(1, l):
@@ -90,22 +89,17 @@ class Solver:
 
 
   def update_manhatan(self, dist, state, parent_state):
-    # print("\33[94m")
     matrix, pos, direction = state
-    goal = self.man_goal[matrix[pos[0]]]
+    goal = self.man_goal[matrix[pos[0]]] # value updated
     m = self.get_xy(pos[0])
     m2 = self.get_xy(pos[1])
     y, x = abs(m[0] - goal[0]), abs(m[1] - goal[1])
     y2, x2 = abs(m2[0] - goal[0]), abs(m2[1] - goal[1])
     dist -= (x2 + y2)
     dist += (x + y)
-    # dist += self.update_conflict(matrix, pos[0], direction, dist, parent_state)
     return (dist)
-    # pass
 
-  #   pass
   def manhatan_distance(self, matrix):
-    # print("\33[92m")
     l = len(matrix)
     dist = 0
     lin = 0
@@ -117,81 +111,40 @@ class Solver:
       x = abs(m[1] - goal[1])
       dist += x + y
     dist += lin
-    # print("REGULAR\t\t", dist, lin, dist + lin)
     return (dist)
 
-#RANGE SHIT
-  def update_conflict(self, matrix, pos, direction, dist, parent_state):
-    (y, x) = self.get_xy(pos)
-    if direction == 1:
-      i1, i2 = x - 1, x + 1
-      cur_col  = [[matrix[j + (i * self.n)]for i in range(self.n)] for j in range(i1, i2)] 
-      old_col = [[parent_state[j + (i * self.n)]for i in range(self.n)] for j in range(i1, i2)]
-    elif direction == 3:
-      i1, i2 = x , x + 2
-      cur_col  = [[matrix[j + (i * self.n)]for i in range(self.n)] for j in range(i1, i2)] 
-      old_col = [[parent_state[j + (i * self.n)]for i in range(self.n)] for j in range(i1, i2)] 
-    elif direction == 2:
-      i1, i2 = y - 1, y + 1
-      cur_col  = [[matrix[j + (i * self.n)] for j in range(self.n)] for i in range(i1, i2)]
-      old_col  = [[parent_state[j + (i * self.n)] for j in range(self.n)] for i in range(i1, i2)]
-    elif direction == 4:
-      i1, i2 = y, y + 2
-      cur_col  = [[matrix[j + (i * self.n)] for j in range(self.n)] for i in range(i1, i2)]
-      old_col  = [[parent_state[j + (i * self.n)] for j in range(self.n)] for i in range(i1, i2)]
-      # ------------
-    if direction == 2 or direction == 4:
-      lin = self.conflict(cur_col, self.line)
-      lin2= self.conflict(old_col, self.line)
-    else:
-      lin = self.conflict(cur_col, self.col)
-      lin2= self.conflict(old_col, self.col)
-    return (lin - lin2)
-
-
-
-  def count_conf(self, cur):
+  def check_column(self, c, x, y, matrix): #x does not change
+    m = self.man_goal[c]
     rr = 0
-    for i in cur:
-      for j in cur[i:]:
-        if (self.goal.index(i) > self.goal.index(j)): 
-          rr += 1
+    for i in range(y + 1, self.n):
+      gg = matrix[(i * self.n) + x]
+      if gg == 0: continue
+      cm = self.man_goal[gg]
+      if cm[1] == x and m[0] > cm[0]:
+        rr += 2
     return rr
 
-  def conflict(self,cur_col, vs):
+  def check_line(self, c, x, y, matrix): # y does not change
+    m = self.man_goal[c]
     rr = 0
-    res = []
-    for i in range(len(cur_col)):
-      for cc in cur_col[i]:
-        if cc in vs[i] and cc is not 0:
-          res += [cc]
-      rr += self.count_conf(res)
-      res = []
+    for i in range(x + 1, self.n):
+      gg = matrix[(y * self.n) + i]
+      if gg == 0: continue
+      cm = self.man_goal[gg]
+      if cm[0] == y and m[1] > cm[1]:
+        rr += 2
     return rr
-
-  # def linear_conflict(self, matrix):
-  #   cur_col  = [[matrix[i + (j * self.n)] for j in range(self.n)] for i in range(self.n)]
-  #   cur_row  = [[matrix[j + (i * self.n)] for j in range(self.n)] for i in range(self.n)]
-  #   return self.conflict(cur_col, self.col) + self.conflict(cur_row, self.line)
-
-#TODO
-
-  def check_column(self, c, x, y, matrix):
-    for i in range(y, self.n):
-      if matrix[(y * self.n) + x]
-    pass
-
-  def check_line(self, c, x, y, matrix):
-    pass
 
   def linear_conflict(self, matrix):
-    rr = 
+    rr = 0
     for y in range(self.n):
       for x in range(self.n):
         c = matrix[(y * self.n) + x]
-        rr += check_column(c, x, y, matrix)
-        rr += check_line(c, x, y, matrix)
-  # # def update_conflict(self, matrix):
-      # pos = self.get_xy(matrix.index(0))
+        if c == 0: continue
+        if y < self.n - 1 and self.man_goal[c][1] == x:
+          rr += self.check_column(c, x, y, matrix)
+        if x < self.n -1 and self.man_goal[c][0] == y:
+          rr += self.check_line(c, x, y, matrix)
+    return rr
 
-
+#
