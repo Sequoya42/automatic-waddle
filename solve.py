@@ -91,6 +91,7 @@ class Solver:
   def update_manhatan(self, dist, state, parent_state):
     matrix, pos, direction = state
     goal = self.man_goal[matrix[pos[0]]] # value updated
+    # dist += self.linear_conflict(matrix)
     m = self.get_xy(pos[0])
     m2 = self.get_xy(pos[1])
     y, x = abs(m[0] - goal[0]), abs(m[1] - goal[1])
