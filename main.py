@@ -46,18 +46,9 @@ def main(argv):
   matrix = [int(x) for l in given for x in l.split()]
   if len(matrix) is not (n*n):
     exit("Bad file, should be n by n")
-  # matrix = [15, 14, 8, 12, 10, 11, 9, 13, 2, 6, 5, 1, 3, 7, 4, 0]
-  # spiral = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
   spiral = verify.spiral_matrix(n)
   # verify.check_validity(matrix, spiral, n)
   print("After check, go to resolve")
-  # astar = solve.Astar(spiral, matrix, n)
-  # astar.solve()
-  # astar2 = Astar.Astar(spiral, matrix, n)
-  # astar2 = Astar.Astar(matrix, spiral, n)
-  # astar2.solve()
-  # exit(0)
-  # print("SeCOND RUN")
   # astar = Astar.Astar(matrix, spiral, n)
   # astar.solve()
   ida = Idastar.Idastar(spiral, matrix, n)
