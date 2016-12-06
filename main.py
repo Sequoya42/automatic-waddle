@@ -46,10 +46,10 @@ def main(argv):
   matrix = [int(x) for l in given for x in l.split()]
   if len(matrix) is not (n*n):
     exit("Bad file, should be n by n")
-  matrix = [15, 14, 8, 12, 10, 11, 9, 13, 2, 6, 5, 1, 3, 7, 4, 0]
-  spiral = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
-  # spiral = verify.spiral_matrix(n)
-  verify.check_validity(matrix, spiral, n)
+  # matrix = [15, 14, 8, 12, 10, 11, 9, 13, 2, 6, 5, 1, 3, 7, 4, 0]
+  # spiral = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+  spiral = verify.spiral_matrix(n)
+  # verify.check_validity(matrix, spiral, n)
   print("After check, go to resolve")
   # astar = solve.Astar(spiral, matrix, n)
   # astar.solve()
@@ -60,9 +60,9 @@ def main(argv):
   # print("SeCOND RUN")
   # astar = Astar.Astar(matrix, spiral, n)
   # astar.solve()
-  # print("IDASTAR RUN")
-  ida = Idastar.Idastar(matrix, spiral, n)
+  ida = Idastar.Idastar(spiral, matrix, n)
   ida.solve()
+  # print("IDASTAR RUN")
 
 
 if __name__ == '__main__':
@@ -71,7 +71,7 @@ if __name__ == '__main__':
 #todo
 #
 #once you have found an optimal path, you can store all states on the path with the correct h' value
-
+#verify range(0,15) and no repetition
 #implement rbfs [Instead of IDA, and iterative instead of recursive version (ilbfs https://www.aaai.org/ocs/index.php/SOCS/SOCS15/paper/viewFile/10911/10632)]
 #implement columns [pre compute?] conflict
 # verify by hand if values are correct
