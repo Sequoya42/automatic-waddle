@@ -10,7 +10,7 @@
 #                                                                              #
 # **************************************************************************** #
 
-import sys, verify, Astar, Idastar
+import sys, verify, Astar, Idastar, Rbfs
 
 def get_map(argv):
   try: 
@@ -36,8 +36,6 @@ def matrix_validity(m, n):
       exit("Digits only")
   return new
 
-
-
 def main(argv):
   given = get_map(argv)
   n = int(given[0])
@@ -47,12 +45,16 @@ def main(argv):
   if len(matrix) is not (n*n):
     exit("Bad file, should be n by n")
   spiral = verify.spiral_matrix(n)
+  matrix = [6, 8, 4, 3, 5, 7, 1, 0 , 2]
+  spiral = [1, 2, 3, 4, 5, 6, 7, 8, 0]
   # verify.check_validity(matrix, spiral, n)
   print("After check, go to resolve")
-  # astar = Astar.Astar(matrix, spiral, n)
-  # astar.solve()
-  ida = Idastar.Idastar(spiral, matrix, n)
-  ida.solve()
+  astar = Astar.Astar(matrix, spiral, n)
+  astar.solve()
+  rbfs = Rbfs.Rbfs(matrix, spiral, n)
+  rbfs.solve()
+  # ida = Idastar.Idastar(spiral, matrix, n)
+  # ida.solve()
   # print("IDASTAR RUN")
 
 
