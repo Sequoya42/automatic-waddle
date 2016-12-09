@@ -14,48 +14,53 @@ import solve, math
 
 class Rbfs(solve.Solver):
 
-def expand(self, mtx, cost, direction = 5):#direction
+  def expand(self, mtx, cost, direction = 5):#direction
     n = self.n
     best = []
     pos = mtx.index(0)
-    cost += 1
     # best += (f, F, mtx, pos, dir)
     if direction != 1 and pos < self.length and (pos + 1) % n: 
       swapped = self.swap(pos, pos + 1, mtx) 
       f = self.h(swapped) + cost
-      best += [(f, f, swapped, (pos, pos + 1), 3)]
+      best += [[f, f, swapped, (pos, pos + 1), 3]]
     if direction != 3 and pos > 0 and pos % n: 
       swapped = self.swap(pos, pos - 1, mtx)
       f = self.h(swapped) + cost
-      best += [(f, f, swapped, (pos, pos - 1), 1)]
+      best += [[f, f, swapped, (pos, pos - 1), 1]]
     if direction != 4 and pos > n - 1: 
       swapped = self.swap(pos, pos - n, mtx) 
       f = self.h(swapped) + cost
-      best += [(f, f, swapped, (pos, pos - n), 2)]
+      best += [[f, f, swapped, (pos, pos - n), 2]]
     if direction != 2 and pos < self.length - self.n: 
       swapped = self.swap(pos, pos + n, mtx)
       f = self.h(swapped) + cost
-      best += [(f, f, swapped, (pos, pos + n), 4)]
+      best += [[f, f, swapped, (pos, pos + n), 4]]
     best.sort(key = lambda e : e[0])
-    return best()
+    return best
 
 # tuple node_info = (f, F, n)
-  def solve(self, node_info = (self.dist, self.dist, self.start) ,bound = self.dist, cost = 0):
+  def solve(self, node_info, bound, cost = 1, direction = 5):
+    print("solve", bound)
     node = node_info[2]
-    if (selh.h(node) + cost) > bound:
-      return value
+    # print(node)
     if self.h(node) == 0:
       exit("SUCCESS !!!")
-    children = expand(node, cost)
+    children = self.expand(node, cost)
     if len(children) == 0:
       exit("PROBLEM")
     for c in children: 
       if node_info[0] < node_info[1]:
         c[1] = max(node_info[1], c[0])
-    n2 = math.inf if len(children) < 2 else c[1]
-    n1 = c[0]
-    while n1[1] <= bound and n1[0] < math.inf: #10 below
-      n1[0]
+    n2 = (0, 99999999) if len(children) < 2 else children[1]
+    n1 = children[0]
+    print(n1[1], bound, n2[1], n1[0])
+    while n1[1] <= bound and n1[0] < 99999999: #10 below
+      print("INWHILE")
+      print(n1[1], bound, n2[1], n1[0])
+      n1[1] = self.solve(n1, min(bound, n2[1]), cost + 1, n1[4])
+      print(n1[1], bound, n2[1], n1[0])
+      print("AFTERWHILE", bound)
+    return n1[1]
 
 
 

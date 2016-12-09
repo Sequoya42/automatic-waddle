@@ -24,12 +24,14 @@ class Idastar(solve.Solver):
 
   # @lru_cache(maxsize=None)
   def dfs(self, state, bound, cost, direction):
+    self.expanded += 1
     new_bound = 99999999
     if self.h(state) == 0:
       self.path += [state]
       self.solved = 1
       return 0
     for ns in self.get_next_states(state, direction):
+      self.total += 1
       hh = self.h(ns[0])
       if cost + hh <= bound:
         b = self.dfs(ns[0], bound, cost + 1, ns[2])
@@ -43,6 +45,7 @@ class Idastar(solve.Solver):
 
 
   def solve(self):
+    print("Idastar")
     cost = 0
     current = self.start
     bound = self.h(self.start)
@@ -50,14 +53,15 @@ class Idastar(solve.Solver):
     while True:
       r = self.dfs(current, bound, 0, 5)
       bound = r
-      print(bound)
       if self.solved:
-        print("GOAL FOUND", bound)
+        # print("GOAL FOUND", bound)
         jj = 0
         for i in self.path[::-1]:
           jj += 1
           # self.print_matrix(i)
         print("Length", jj - 1)
+        print("Expanded:\t", self.expanded)
+        print("Total : \t", self.total)
         return (0)
 
   # def it_dfs(self, state, bound, cost = 0, direction = 5):

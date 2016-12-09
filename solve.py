@@ -16,6 +16,7 @@ class Solver:
   # __slots__ = ['cur', 'goal', 'length', 'n', 'parents', 'start', 'man_goal', 'man_init']
   def __init__(self, goal, initial, n):
     self.expanded = 0
+    self.total = 0
     self.goal =  goal
     self.solved = 0
     self.start = initial
@@ -37,8 +38,8 @@ class Solver:
   def print_solution(self, cur):
     rev = []
     print("SOLUTION")
-    print("Nb of states in memory: ", len(self.parents))
-    print("Nb of nodes expanded: ", self.expanded)
+    print("Expanded: ", self.expanded)
+    print("Total: ", len(self.parents))
     z = -1
     while cur != None:
       z += 1

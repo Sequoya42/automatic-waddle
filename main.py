@@ -45,14 +45,13 @@ def main(argv):
   if len(matrix) is not (n*n):
     exit("Bad file, should be n by n")
   spiral = verify.spiral_matrix(n)
-  matrix = [6, 8, 4, 3, 5, 7, 1, 0 , 2]
-  spiral = [1, 2, 3, 4, 5, 6, 7, 8, 0]
   # verify.check_validity(matrix, spiral, n)
   print("After check, go to resolve")
   astar = Astar.Astar(matrix, spiral, n)
   astar.solve()
+  print("RBFS")
   rbfs = Rbfs.Rbfs(matrix, spiral, n)
-  rbfs.solve()
+  rbfs.solve((rbfs.dist, rbfs.dist, rbfs.start), 99999999)
   # ida = Idastar.Idastar(spiral, matrix, n)
   # ida.solve()
   # print("IDASTAR RUN")
@@ -61,19 +60,4 @@ def main(argv):
 if __name__ == '__main__':
   main(sys.argv)
 
-#todo
-#
-#once you have found an optimal path, you can store all states on the path with the correct h' value
-#verify range(0,15) and no repetition
-#implement rbfs [Instead of IDA, and iterative instead of recursive version (ilbfs https://www.aaai.org/ocs/index.php/SOCS/SOCS15/paper/viewFile/10911/10632)]
-#implement columns [pre compute?] conflict
-# verify by hand if values are correct
-# try to implement them as the manhatan, for re update instead of calculating again
-# implement pattern database ||[or not, just a correct LC and WD]
-# make iterative dfs [to see if IDA* is really this slow]
-# Precompute and store a few (1024?) nodes from the goal state and search for all those
-# and take the one with the lowest cost [BFS to store all node from goal to a depth of X]
-# and bidirectionnal A* [or SMA*, should implement]
 
-# and check if f() or h() always lower in the solution (always decreasing)
-# and if so, can expand fewer nodes
