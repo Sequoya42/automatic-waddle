@@ -46,8 +46,8 @@ class Solver:
       rev += [cur]
       cur = self.parents[str(cur)][0]
     print("Length of path:", z)
-    # for i in rev[::]:
-      # self.print_matrix(i)
+    for i in rev[::]:
+      self.print_matrix(i)
 
   def print_matrix(self, m):
     n = self.n

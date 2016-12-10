@@ -10,7 +10,7 @@
 #                                                                              #
 # **************************************************************************** #
 
-import solve, math
+import solve, math, time
 
 class Rbfs(solve.Solver):
 
@@ -40,27 +40,35 @@ class Rbfs(solve.Solver):
 
 # tuple node_info = (f, F, n)
   def solve(self, node_info, bound, cost = 1, direction = 5):
-    print("solve", bound)
+    # print("solve", bound)
     node = node_info[2]
     # print(node)
+    if self.solved == 1:
+      print(node)
     if self.h(node) == 0:
-      exit("SUCCESS !!!")
+      self.solved = 1
     children = self.expand(node, cost)
     if len(children) == 0:
       exit("PROBLEM")
     for c in children: 
       if node_info[0] < node_info[1]:
         c[1] = max(node_info[1], c[0])
-    n2 = (0, 99999999) if len(children) < 2 else children[1]
+    print("LEN", len(children))
+    if len(children) < 2:
+      print("HERE")
+      n2 = (0, 9999999)
+    else:
+      n2 = children[1]
     n1 = children[0]
     print(n1[1], bound, n2[1], n1[0])
-    while n1[1] <= bound and n1[0] < 99999999: #10 below
-      print("INWHILE")
-      print(n1[1], bound, n2[1], n1[0])
-      n1[1] = self.solve(n1, min(bound, n2[1]), cost + 1, n1[4])
-      print(n1[1], bound, n2[1], n1[0])
-      print("AFTERWHILE", bound)
-    return n1[1]
+    print(n1[2])
+    time.sleep(1)
+    while n1[1] <= bound and n1[0] < 99999999 and self.solved == 0: #10 below
+      n1 = self.solve(n1, min(bound, n2[1]), cost + 1, n1[4])
+    print("AFTERWHILE", bound)
+    if self.solved == 1:
+      self.print_matrix(node)
+    return n1
 
 
 
