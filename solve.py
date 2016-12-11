@@ -40,20 +40,28 @@ class Solver:
     print("SOLUTION")
     print("Expanded: ", self.expanded)
     print("Total: ", len(self.parents))
+    cur2 = 0
     z = -1
     while cur != None:
       z += 1
-      rev += [cur]
+      rev += [(cur, cur2)]
       cur = self.parents[str(cur)][0]
+      if (cur != None):
+        cur2 = self.parents[str(cur)][1]
     print("Length of path:", z)
     for i in rev[::]:
-      self.print_matrix(i)
+      self.print_matrix(i[0])
+      print(i[1])
 
   def print_matrix(self, m):
     n = self.n
     x = (n * n)
     k = len(str(x))
     for i in range(x):
+      if m[i] == 0:
+        print("\033[32m", end = "")
+      else:
+        print("\033[0m", end = "")
       print("{:{}d}".format(m[i], k), end=' ')
       if not (i + 1) % n and i > 0:
         print ("")
@@ -105,7 +113,7 @@ class Solver:
     l = len(matrix)
     dist = 0
     lin = 0
-    lin = self.linear_conflict(matrix)
+    # lin = self.linear_conflict(matrix)
     for i in range(1, l):
       m = self.get_xy(matrix.index(i))
       goal = self.man_goal[i]

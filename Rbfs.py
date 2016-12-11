@@ -35,43 +35,37 @@ class Rbfs(solve.Solver):
       swapped = self.swap(pos, pos + n, mtx)
       f = self.h(swapped) + cost
       best += [[f, f, swapped, (pos, pos + n), 4]]
-    best.sort(key = lambda e : e[0])
+    # best.sort(key = lambda e : e[1])
     return best
 
+#still not working, but closer
 # tuple node_info = (f, F, n)
   def solve(self, node_info, bound, cost = 1, direction = 5):
-    # print("solve", bound)
+    # print("solve", node_info, bound)
+    # time.sleep(0.1)
     node = node_info[2]
-    # print(node)
-    if self.solved == 1:
-      print(node)
+    if self.h(node) > bound:
+      print("HEr")
+      return self.h(node)
     if self.h(node) == 0:
+      self.expanded = cost
       self.solved = 1
-    children = self.expand(node, cost)
-    if len(children) == 0:
-      exit("PROBLEM")
+    if self.h(node) > bound:
+      return self.h(node)
+    children = self.expand(node, cost, direction)
     for c in children: 
       if node_info[0] < node_info[1]:
         c[1] = max(node_info[1], c[0])
-    print("LEN", len(children))
-    if len(children) < 2:
-      print("HERE")
-      n2 = (0, 9999999)
-    else:
-      n2 = children[1]
+    children.sort(key = lambda e: e[1])
+    n2 = (0, 999999999) if len(children) < 2 else children[1]
     n1 = children[0]
-    print(n1[1], bound, n2[1], n1[0])
-    print(n1[2])
-    time.sleep(1)
-    while n1[1] <= bound and n1[0] < 99999999 and self.solved == 0: #10 below
-      n1 = self.solve(n1, min(bound, n2[1]), cost + 1, n1[4])
-    print("AFTERWHILE", bound)
+    while n1[1] <= bound and n1[0] < 999999999 and self.solved == 0: #10 below
+      n1[1] = self.solve(n1, min(bound, n2[1]), cost + 1, n1[4])
+      if n2[1] < n1[1]: n2, n1 = n1, n2
     if self.solved == 1:
+      print(node_info)
       self.print_matrix(node)
-    return n1
-
-
-
+    return n1[1] 
 # --------------------------------------------------
 # RBFS(n, B)
 # 1. if n is a goal

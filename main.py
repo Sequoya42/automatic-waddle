@@ -45,16 +45,19 @@ def main(argv):
   if len(matrix) is not (n*n):
     exit("Bad file, should be n by n")
   spiral = verify.spiral_matrix(n)
-  # verify.check_validity(matrix, spiral, n)
   print("After check, go to resolve")
+  # matrix = [4, 15, 1, 2, 0, 14, 8, 13, 10, 12, 3, 9, 11, 5, 7, 6]
+  # matrix = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0]
+  verify.check_validity(matrix, spiral, n)
   astar = Astar.Astar(matrix, spiral, n)
   astar.solve()
-  print("RBFS")
+  print("RBFS\n=======")
   rbfs = Rbfs.Rbfs(matrix, spiral, n)
   rbfs.solve((rbfs.dist, rbfs.dist, rbfs.start), 99999999)
-  # ida = Idastar.Idastar(spiral, matrix, n)
-  # ida.solve()
+  print("Length: ", rbfs.expanded - 1, "\n==========")
   # print("IDASTAR RUN")
+  # ida = Idastar.Idastar(matrix, spiral, n)
+  # ida.solve()
 
 
 if __name__ == '__main__':

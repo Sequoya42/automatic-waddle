@@ -36,7 +36,7 @@ class Astar(solve.Solver):
           hh = self.h(new_state[0])
           priority = hh + cost#  + self.linear_conflict(new_state[0])
           # if heuristic precise enough (LC?) can use the and hh <= self.dist
-          if str(new_state[0]) not in self.parents and hh <= self.dist:
+          if str(new_state[0]) not in self.parents:
             open_list.add(priority, cost, new_state[0], hh)
             self.parents[str(new_state[0])] = (current, priority, cost, new_state[2])
 
