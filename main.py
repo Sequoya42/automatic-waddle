@@ -10,11 +10,11 @@
 #                                                                              #
 # **************************************************************************** #
 
-import sys, verify, Astar, Idastar, Rbfs
+import argparse, verify, Astar, Idastar, Rbfs
 
 def get_map(argv):
   try: 
-    with open(argv[1]) as f: 
+    with open(argv) as f: 
       l = [line.strip() for line in f if line[0] is not '#']
     return (l)
   except Exception as error:
@@ -36,8 +36,12 @@ def matrix_validity(m, n):
       exit("Digits only")
   return new
 
-def main(argv):
-  given = get_map(argv)
+def main():
+  parser = argparse.ArgumentParser(description='Npuzzle solver.')
+  parser.add_argument('file', help="Please specify a file containing a npuzzle map")
+  parser.add_argument('-a', '--algo', help="Please specify which algorithm to use", choices = ['idastar', 'astar', 'rbfs'], default ='astar')
+  args = parser.parse_args()
+  given = get_map(args.file)
   n = int(given[0])
   given = given[1:]
   given = matrix_validity(given, n)
@@ -46,21 +50,23 @@ def main(argv):
     exit("Bad file, should be n by n")
   spiral = verify.spiral_matrix(n)
   print("After check, go to resolve")
+  verify.check_validity(matrix, spiral, n)
+  if args.algo == 'astar':
+    astar = Astar.Astar(matrix, spiral, n)
+    astar.solve()
+  elif args.algo == 'idastar':
+    ida = Idastar.Idastar(matrix, spiral, n)
+    ida.solve()
+  elif args.algo == 'rbfs':
+    print("RBFS [half done, not working correctly] \n=======")
+    rbfs = Rbfs.Rbfs(matrix, spiral, n)
+    rbfs.solve((rbfs.dist, rbfs.dist, rbfs.start), 99999999)
+    print("Length: ", rbfs.expanded - 1, "\n==========")
+
   # matrix = [4, 15, 1, 2, 0, 14, 8, 13, 10, 12, 3, 9, 11, 5, 7, 6]
   # matrix = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0]
-  verify.check_validity(matrix, spiral, n)
-  astar = Astar.Astar(matrix, spiral, n)
-  astar.solve()
-  print("RBFS\n=======")
-  rbfs = Rbfs.Rbfs(matrix, spiral, n)
-  rbfs.solve((rbfs.dist, rbfs.dist, rbfs.start), 99999999)
-  print("Length: ", rbfs.expanded - 1, "\n==========")
-  # print("IDASTAR RUN")
-  # ida = Idastar.Idastar(matrix, spiral, n)
-  # ida.solve()
-
 
 if __name__ == '__main__':
-  main(sys.argv)
+  main()
 
 

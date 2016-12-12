@@ -64,7 +64,7 @@ class Rbfs(solve.Solver):
       if n2[1] < n1[1]: n2, n1 = n1, n2
     if self.solved == 1:
       print(node_info)
-      self.print_matrix(node)
+      # self.print_matrix(node)
     return n1[1] 
 # --------------------------------------------------
 # RBFS(n, B)
